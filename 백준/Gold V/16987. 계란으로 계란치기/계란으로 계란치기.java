@@ -21,7 +21,7 @@ public class Main {
     }
 }
 
-public static List<Egg> eggs = new ArrayList<>();
+public static Egg eggs[];
 public static int maxCount = 0;
 
 public static void main(String[] args) throws IOException {
@@ -30,11 +30,12 @@ public static void main(String[] args) throws IOException {
     StringTokenizer st;
     
     N = Integer.parseInt(br.readLine());
+    eggs = new Egg[N];
     for ( int i = 0 ; i < N ; ++i ) {
         st = new StringTokenizer(br.readLine());
         int durability = Integer.parseInt(st.nextToken());
         int weight = Integer.parseInt(st.nextToken());
-        eggs.add(new Egg(durability,weight));
+        eggs[i] = new Egg(durability,weight);
     }
     dfs(0);
     bw.write(maxCount+"\n");
@@ -48,19 +49,19 @@ public static void dfs(int depth) {
         return;
     }
     
-    Egg egg = eggs.get(depth);
+    Egg egg = eggs[depth];
     if ( egg.durability <= 0 ) {
         dfs(depth+1);
         return;
     }
     for ( int i = 0 ; i < N ; ++i ) {
         if ( depth == i ) continue;
-        if ( eggs.get(i).durability > 0 ) {
-            eggs.get(i).durability -= egg.weight;
-            egg.durability -= eggs.get(i).weight;
+        if ( eggs[i].durability > 0 ) {
+            eggs[i].durability -= egg.weight;
+            egg.durability -= eggs[i].weight;
             dfs(depth+1);
-            eggs.get(i).durability += egg.weight;
-            egg.durability += eggs.get(i).weight;
+            eggs[i].durability += egg.weight;
+            egg.durability += eggs[i].weight;
         }
     }
     maxCount = Math.max(maxCount, getCountCrackedEggs());
