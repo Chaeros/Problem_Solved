@@ -22,7 +22,22 @@ public class Main {
 	static int dc[] = {0,1,0,-1};
 	static int islandCount = 0;
 	static int minVal = Integer.MAX_VALUE;
-	static int tempSum = 0;
+	
+	static class Vertex implements Comparable<Vertex>{
+		int no;
+		int weight;
+		
+		public Vertex(int no, int weight) {
+			this.no = no;
+			this.weight = weight;
+		}
+
+		@Override
+		public int compareTo(Vertex o) {
+			if ( this.weight < o.weight ) return -1;
+			return 1;
+		}
+	}
 	
 	static class Bridge implements Comparable<Bridge> {
 		int from;
@@ -77,27 +92,59 @@ public class Main {
 		}
 		parent = new int[islandCount+1];
 		result = new int[islandCount-1];
-		parentMake();
 		generateBridge();
-		Collections.sort(bridges);
 		
+		boolean[] visited = new boolean[islandCount];
+		int[] minEdge = new int[islandCount];
+		Arrays.fill(minEdge,1,islandCount,Integer.MAX_VALUE);
+		int count = 0;
 		int resultSum = 0;
-		for ( Bridge bridge : bridges ) {
-			if ( find(bridge.from) != find(bridge.to) ) {
-				union(bridge.from,bridge.to);
-				resultSum += bridge.weight;
+		PriorityQueue<Vertex> pq = new PriorityQueue<>();
+		pq.offer(new Vertex(0,0));
+		
+		while ( !pq.isEmpty() ) {
+			Vertex current = pq.poll();
+			if ( visited[current.no] ) continue;
+			int minVertex = current.no;
+			int minValue = current.weight;
+			resultSum += minValue;
+			visited[minVertex] = true;
+			++count;
+			if ( count == islandCount ) break;
+			
+			for ( int i = 0 ; i < bridges.get(minVertex).size() ; ++i ) {
+				if ( !visited[bridges.get(minVertex).get(i).no] && bridges.get(minVertex).get(i).weight < minEdge[bridges.get(minVertex).get(i).no] ) {
+					minEdge[bridges.get(minVertex).get(i).no] = bridges.get(minVertex).get(i).weight;
+					pq.offer(new Vertex(bridges.get(minVertex).get(i).no,minEdge[bridges.get(minVertex).get(i).no]));
+				}
 			}
 		}
 		
-		if ( validateIsAllSameSet() ) bw.write(resultSum+"\n");
-		else bw.write("-1\n");
+		if ( isMST(minEdge) ) {
+			bw.write(resultSum+"\n");
+		}
+		else{
+			bw.write("-1\n");
+		}
 		bw.flush();
 		bw.close();
 	}
 	
-	static PriorityQueue<Bridge> pq = new PriorityQueue<>();
-	static List<Bridge> bridges = new ArrayList<>();
+	
+	private static boolean isMST(int[] minEdge) {
+		for ( int i = 0 ; i < islandCount ; ++i ) {
+			if ( minEdge[i] == Integer.MAX_VALUE ) return false;
+		}
+		return true;
+	}
+
+
+	static List<List<Vertex>> bridges = new ArrayList<>();
 	private static void generateBridge() {
+		for ( int r = 0 ; r <= islandCount ; ++r ) {
+			bridges.add(new ArrayList<>());
+		}
+		
 		for ( int r = 0 ; r < N ; ++r ) {
 			for ( int c = 0 ; c < M ; ++c ) {
 				if ( map[r][c] > 0 ) {
@@ -114,7 +161,7 @@ public class Main {
 							++length;
 						}
 						if ( length <= 1 ) continue;
-						bridges.add(new Bridge(map[r][c],map[mr][mc],length));
+						bridges.get(map[r][c]-1).add(new Vertex(map[mr][mc]-1, length));
 					}
 				}
 			}
@@ -122,14 +169,6 @@ public class Main {
 	}
 	
 	
-	private static boolean validateIsAllSameSet() {
-		int val = find(1);
-		for ( int i =2 ; i <= islandCount ; ++i ) {
-			if ( val != find(i) ) return false;
-		}
-		return true;
-	}
-
 	private static void bfs(int row, int col) {
 		Queue<int []> q = new ArrayDeque<>();
 		q.offer(new int[] {row,col});
@@ -151,27 +190,4 @@ public class Main {
 		}
 	}
 	
-	private static void parentMake() {
-		for ( int i = 1 ; i <= islandCount ; ++i ) {
-			parent[i] = i;
-		}
-	}
-	
-	private static int find(int x) {
-		if ( x == parent[x] ) return x;
-		return parent[x] = find(parent[x]);
-	}
-	
-	private static void union(int a, int b) {
-		int aRoot = find(a);
-		int bRoot = find(b);
-		
-		if ( aRoot == bRoot ) return;
-		if ( aRoot < bRoot ) {
-			parent[bRoot] = aRoot;
-		}
-		else {
-			parent[aRoot] = bRoot;
-		}
-	}
 }
