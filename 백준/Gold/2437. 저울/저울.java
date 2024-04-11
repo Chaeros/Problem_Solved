@@ -9,7 +9,6 @@ import java.util.StringTokenizer;
 public class Main {
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringTokenizer st;
 		int N = Integer.parseInt(br.readLine());
 		int arr[] = new int[N];
@@ -31,8 +30,6 @@ public class Main {
 			}
 			++count;
 		}
-		bw.write(count+"\n");
-		bw.flush();
-		bw.close();
+		System.out.println(count);
 	}
 }
