@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -27,10 +26,6 @@ public class Main {
 			int count = Integer.parseInt(st.nextToken());
 			list[deadline].add(count);
 			set.add(deadline);
-		}
-		
-		for ( int n = 1 ; n <= N ; ++n ) {
-			Collections.sort(list[n],(o1,o2)->o2-o1);
 		}
 		
 		int resultSum = 0;
