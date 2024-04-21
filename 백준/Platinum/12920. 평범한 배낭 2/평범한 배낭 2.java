@@ -3,47 +3,48 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
+	static class Node{
+		int weight;
+		int value;
+		public Node(int weight, int value) {
+			this.weight = weight;
+			this.value = value;
+		}
+	}
+	
+	public static void main(String[] args) throws IOException{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		
 		int N = Integer.parseInt(st.nextToken());
-		int M = Integer.parseInt(st.nextToken());
-		
-		Queue<int[]> q = new ArrayDeque<int[]>();
+		int K = Integer.parseInt(st.nextToken());
+		List<Node> list = new ArrayList<>();
 		for ( int n = 0 ; n < N ; ++n ) {
 			st = new StringTokenizer(br.readLine());
-			int V = Integer.parseInt(st.nextToken());
-			int C = Integer.parseInt(st.nextToken());
-			int K = Integer.parseInt(st.nextToken());
-			
-			for ( int i = K ; i > 0 ; i >>= 1 ) {
+			int weight = Integer.parseInt(st.nextToken());
+			int value = Integer.parseInt(st.nextToken());
+			int number = Integer.parseInt(st.nextToken());
+			for ( int i = number ; i > 0 ; i>>=1) {
 				int x = i - (i>>1);
-				q.offer(new int[] {V*x,C*x});
+				list.add(new Node(weight*x,value*x));
 			}
 		}
-		int d[][] = new int[q.size()+1][M+1];
-		int size = q.size();
 		
-		for ( int n = 1 ; n <= size ; ++n ) {
-			int[] now = q.poll();
-			int weight = now[0];
-			int value = now[1];
-			for ( int w = 1 ; w <= M ; ++w ) {
-				if ( w < weight ) d[n][w] = d[n-1][w];
-				else {
-					d[n][w] = Math.max(d[n-1][w], d[n-1][w-weight]+value);
-					d[n][w] = Math.max(d[n][w], d[n][w-1]);
+		int d[] = new int[K+1];
+		for ( Node node : list ) {
+			for ( int i = K ; i > 0 ; --i ) {
+				if ( i >= node.weight ) {
+					d[i] = Math.max(d[i], d[i-node.weight] + node.value);
 				}
 			}
 		}
-		bw.write(d[size][M]+"\n");
+		bw.write(d[K]+"\n");
 		bw.flush();
 		bw.close();
 	}
