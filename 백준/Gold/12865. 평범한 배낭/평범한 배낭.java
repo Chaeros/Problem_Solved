@@ -2,37 +2,46 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
+	
+	static class Node{
+		int weight;
+		int value;
+		public Node(int weight, int value) {
+			this.weight = weight;
+			this.value = value;
+		}
+	}
+	
+	public static void main(String[] args) throws IOException{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		
 		int N = Integer.parseInt(st.nextToken());
 		int K = Integer.parseInt(st.nextToken());
-		
-		int weights[] = new int[N+1];
-		int values[] = new int[N+1];
-		int dp[][] = new int[101][100001];
-		
-		for ( int n = 1 ; n <= N ; ++n ) {
+		List<Node> list = new ArrayList<>();
+		for ( int n = 0 ; n < N ; ++n ) {
 			st = new StringTokenizer(br.readLine());
-			weights[n] = Integer.parseInt(st.nextToken());
-			values[n] = Integer.parseInt(st.nextToken());
+			int weight = Integer.parseInt(st.nextToken());
+			int value = Integer.parseInt(st.nextToken());
+			list.add(new Node(weight,value));
 		}
 		
-		for ( int n = 1 ; n <= N ; ++n ) {
-			for ( int w = 1 ; w <= K ; ++w ) {
-				if ( w < weights[n] ) dp[n][w] = dp[n-1][w];
-				else dp[n][w] = Math.max(dp[n-1][w], dp[n-1][w-weights[n]]+values[n]);
+		int d[] = new int[K+1];
+		for ( Node node : list ) {
+			for ( int i = K ; i > 0 ; --i ) {
+				if ( i >= node.weight ) {
+					d[i] = Math.max(d[i], d[i-node.weight] + node.value);
+				}
 			}
 		}
-		
-		bw.write(dp[N][K]+"\n");
+		bw.write(d[K]+"\n");
 		bw.flush();
 		bw.close();
 	}
