@@ -26,6 +26,7 @@ int getResult(int start, int to) {
 
 	while (!pq.empty()) {
 		Node now = pq.top();pq.pop();
+		if (dist[now.to] < now.weight) continue;
 		for (Node next : list[now.to]) {
 			if (dist[next.to] > dist[now.to] + next.weight) {
 				dist[next.to] = dist[now.to] + next.weight;
