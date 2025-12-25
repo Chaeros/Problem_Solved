@@ -92,7 +92,8 @@ int main() {
 			std::cin >> index >> start >> end;
 
 			long long result = getQuery(root[index], 1, N, start, end);
-			std::cout << result << '\n';
+			//std::cout << result << '\n';
+			printf("%lld\n", result);
 		}
 	}
 
